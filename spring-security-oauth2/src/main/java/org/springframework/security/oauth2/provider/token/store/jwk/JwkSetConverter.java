@@ -93,10 +93,16 @@ class JwkSetConverter implements Converter<InputStream, Set<JwkDefinition>> {
 						attributes.put(attributeName, parser.getValueAsString());
 					}
 				}
+
+				JwkDefinition jwkDefinition = null;
 				JwkDefinition.KeyType keyType =
 						JwkDefinition.KeyType.fromValue(attributes.get(KEY_TYPE));
 				if (JwkDefinition.KeyType.RSA.equals(keyType)) {
-					JwkDefinition jwkDefinition = createRsaJwkDefinition(attributes);
+					jwkDefinition = this.createRsaJwkDefinition(attributes);
+				} else if (JwkDefinition.KeyType.EC.equals(keyType)) {
+					jwkDefinition = this.createEllipticCurveJwkDefinition(attributes);
+				}
+				if (jwkDefinition != null) {
 					if (!jwkDefinitions.add(jwkDefinition)) {
 						throw new JwkException("Duplicate JWK found in Set: " +
 								jwkDefinition.getKeyId() + " (" + KEY_ID + ")");
@@ -192,17 +198,25 @@ class JwkSetConverter implements Converter<InputStream, Set<JwkDefinition>> {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Creates a {@link EllipticCurveJwkDefinition} based on the supplied attributes.
 	 *
 	 * @param attributes the attributes used to create the {@link EllipticCurveJwkDefinition}
 	 * @return a {@link JwkDefinition} representation of a EC Key
 	 * @throws JwkException if at least one attribute value is missing or invalid for a EC Key
+=======
+	 * Creates an {@link EllipticCurveJwkDefinition} based on the supplied attributes.
+	 *
+	 * @param attributes the attributes used to create the {@link EllipticCurveJwkDefinition}
+	 * @return a {@link JwkDefinition} representation of an EC Key
+	 * @throws JwkException if at least one attribute value is missing or invalid for an EC Key
+>>>>>>> 3148a7d89a2a5f3349357b32720b745b13afdc69
 	 */
 	private JwkDefinition createEllipticCurveJwkDefinition(Map<String, String> attributes) {
 		// kid
 		String keyId = attributes.get(KEY_ID);
 		if (!StringUtils.hasText(keyId)) {
-			throw new JwkException(KEY_ID + " is a required attribute for a JWK.");
+			throw new JwkException(KEY_ID + " is a required attribute for an EC JWK.");
 		}
 
 		// use
@@ -226,19 +240,19 @@ class JwkSetConverter implements Converter<InputStream, Set<JwkDefinition>> {
 		// x
 		String x = attributes.get(EC_PUBLIC_KEY_X);
 		if (!StringUtils.hasText(x)) {
-			throw new JwkException(EC_PUBLIC_KEY_X + " is a required attribute for a EC JWK.");
+			throw new JwkException(EC_PUBLIC_KEY_X + " is a required attribute for an EC JWK.");
 		}
 
 		// y
 		String y = attributes.get(EC_PUBLIC_KEY_Y);
 		if (!StringUtils.hasText(y)) {
-			throw new JwkException(EC_PUBLIC_KEY_Y + " is a required attribute for a EC JWK.");
+			throw new JwkException(EC_PUBLIC_KEY_Y + " is a required attribute for an EC JWK.");
 		}
 
 		// crv
 		String curve = attributes.get(EC_PUBLIC_KEY_CURVE);
 		if (!StringUtils.hasText(curve)) {
-			throw new JwkException(EC_PUBLIC_KEY_CURVE + " is a required attribute for a EC JWK.");
+			throw new JwkException(EC_PUBLIC_KEY_CURVE + " is a required attribute for an EC JWK.");
 		}
 
 		EllipticCurveJwkDefinition jwkDefinition = new EllipticCurveJwkDefinition(
