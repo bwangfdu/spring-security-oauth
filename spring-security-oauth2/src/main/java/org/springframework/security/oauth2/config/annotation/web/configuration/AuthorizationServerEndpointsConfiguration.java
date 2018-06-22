@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration.TokenKeyEndpointRegistrar;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -41,8 +42,11 @@ import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
+
 import org.springframework.security.oauth2.provider.device.DeviceAuthorizationCodeServices;
+
 import org.springframework.security.oauth2.provider.endpoint.*;
+
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
@@ -90,6 +94,7 @@ public class AuthorizationServerEndpointsConfiguration {
 		authorizationEndpoint.setOAuth2RequestFactory(oauth2RequestFactory());
 		authorizationEndpoint.setOAuth2RequestValidator(oauth2RequestValidator());
 		authorizationEndpoint.setUserApprovalHandler(userApprovalHandler());
+		authorizationEndpoint.setRedirectResolver(redirectResolver());
 		return authorizationEndpoint;
 	}
 
@@ -224,12 +229,16 @@ public class AuthorizationServerEndpointsConfiguration {
 		return getEndpointsConfigurer().getAuthorizationCodeServices();
 	}
 
-	private WebResponseExceptionTranslator exceptionTranslator() {
+	private WebResponseExceptionTranslator<OAuth2Exception> exceptionTranslator() {
 		return getEndpointsConfigurer().getExceptionTranslator();
 	}
 
+
 	private DeviceAuthorizationCodeServices deviceAuthorizationCodeServices() {
 		return getEndpointsConfigurer().getDeviceAuthorizationCodeServices();
+	}
+	private RedirectResolver redirectResolver() {
+		return getEndpointsConfigurer().getRedirectResolver();
 	}
 
 	private TokenGranter tokenGranter() throws Exception {
